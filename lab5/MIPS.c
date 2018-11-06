@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 # define MAX_LINE 50
-//github test
-//work please
+
 
 
 int main(int arc, char *argv[]){
