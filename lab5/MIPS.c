@@ -53,18 +53,42 @@ int main(int arc, char *argv[]){
 		sscanf(place, "%s", &registers[i][1]);
 	}
 	//Prep for reading file into memory
-	char *memory[40][5];
+	char *memory[102][5];
 	char line[MAX_LINE];
 	FILE *fp = fopen("mips.txt", "r");
 	char *temp;
 	int counter = 0;
+	int zero = 0;
+	int hexvar = 304;
+	printf("%i", hexvar);
+
 	//grabes a line, and uses sscan to input arguments into memory
 	while(fgets(line, 40, fp)){
 
 		if(sscanf(line, " %40[^, ^\t], %40[^, ^\t], %40[^,^\t], %40[^,^\t], %s ", &memory[counter][0], &memory[counter][1], &memory[counter][2], &memory[counter][3], &memory[counter][4])){
 			counter++;
 		}
+		if(counter >= 25){
+			printf("Stack Smashing Detected");
+			exit(0);
+		}
+		//sets 25 spaces for mips instructions
 
+	}
+	for(int i = 25; i <= 101; i++){
+		sprintf(&memory[i][0],"%d", hexvar);
+		sprintf(&memory[i][1],"%d", zero);
+		sprintf(&memory[i][2],"%d", zero);
+		sprintf(&memory[i][3],"%d", zero);
+		sprintf(&memory[i][4],"%d", zero);
+		hexvar = hexvar -4;
+		printf("asd %i\n", hexvar);
+
+	}
+	for(int j = 0; j <= 100; j++){
+		for(int k = 0; k < 5; k++){
+			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
+		}
 	}
 	fclose(fp);
 	//These instructions are to start the compare statements
