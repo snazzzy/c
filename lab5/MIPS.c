@@ -4,6 +4,7 @@
 # define MAX_LINE 50
 
 //testing for github
+//LOLsadfgg
 
 int main(int arc, char *argv[]){
 	//Defines input
