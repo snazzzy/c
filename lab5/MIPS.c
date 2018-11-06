@@ -3,7 +3,7 @@
 #include <string.h>
 # define MAX_LINE 50
 
-
+//testing for github
 
 int main(int arc, char *argv[]){
 	//Defines input
