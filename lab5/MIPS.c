@@ -5,6 +5,15 @@
 
 //githubtest
 
+unsigned subaru(char *reg1, char *reg2){
+	unsigned long a = 0;
+	unsigned long b = 0;
+	strtoul(&reg1, NULL, a);
+	strtoul(&reg2, NULL, b);
+	unsigned long c = a - b;
+	return c;
+}
+
 int main(int arc, char *argv[]){
 	//Defines input
 	if(arc < 1){
@@ -53,14 +62,13 @@ int main(int arc, char *argv[]){
 		sscanf(place, "%s", &registers[i][1]);
 	}
 	//Prep for reading file into memory
-	char *memory[102][5];
+	char *memory[129][5];
 	char line[MAX_LINE];
 	FILE *fp = fopen("mips.txt", "r");
 	char *temp;
 	int counter = 0;
 	int zero = 0;
-	int hexvar = 304;
-	printf("%i", hexvar);
+	int hexvar = 400;
 
 	//grabes a line, and uses sscan to input arguments into memory
 	while(fgets(line, 40, fp)){
@@ -68,26 +76,26 @@ int main(int arc, char *argv[]){
 		if(sscanf(line, " %40[^, ^\t], %40[^, ^\t], %40[^,^\t], %40[^,^\t], %s ", &memory[counter][0], &memory[counter][1], &memory[counter][2], &memory[counter][3], &memory[counter][4])){
 			counter++;
 		}
-		if(counter >= 25){
+		if(counter >= 28){
 			printf("Stack Smashing Detected");
 			exit(0);
 		}
 		//sets 25 spaces for mips instructions
 
 	}
-	for(int i = 25; i <= 101; i++){
-		sprintf(&memory[i][0],"%d", hexvar);
+	for(int i = 28; i <= 128; i++){
+		sprintf(&memory[i][0],"%x", hexvar);
 		sprintf(&memory[i][1],"%d", zero);
 		sprintf(&memory[i][2],"%d", zero);
 		sprintf(&memory[i][3],"%d", zero);
 		sprintf(&memory[i][4],"%d", zero);
 		hexvar = hexvar -4;
-		printf("asd %i\n", hexvar);
+		//printf("asd %i\n", hexvar);
 
 	}
-	for(int j = 0; j <= 100; j++){
+	for(int j = 0; j <= 128; j++){
 		for(int k = 0; k < 5; k++){
-			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
+			//printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
 		}
 	}
 	fclose(fp);
@@ -97,6 +105,8 @@ int main(int arc, char *argv[]){
 	char instruction3[] = {'j','\0'};
 	char instruction4[] = {'s','l','l','\0'};
 	char instruction5[] = {'b','n','e','\0'};
+	char instruction6[] = {'a', 'd', 'd', 'i', 'u', '\0'};
+	char instruction7[] = {'s', 'u', 'b', 'b', 'u', '\0'};
 	int addi1 = 0;
 	int addi2 = 0;
 	int addi3 = 0;
@@ -114,6 +124,15 @@ int main(int arc, char *argv[]){
 	int bne2 = 0;
 	int bne3 = 0;
 	int bne4 = 0;
+	int addiu1 = 0;
+	int addiu2 = 0;
+	int addiu3 = 0;
+	int addiu4 = 0;
+	int subu1 = 0;
+	int subu2 = 0;
+	int subu3 = 0;
+	int subu4 = 0;
+	int subu5 = 0;
 	int flag1 = 1;
 	int flag2 = 1;
 	int flag3 = 1;
@@ -228,14 +247,66 @@ int main(int arc, char *argv[]){
 
 		}
 		
-}
+	
+			//grabs the location (line) of the first instruction
+	if(strcmp(&memory[m][1], instruction6) == 0){
+		addiu1 = m;
+		//this loop is to go through my register array
+		for(int i = 0; i < 32; i++){
+			//here i compare the first argument
+			if(!strcmp(&memory[addiu1][2], registers[i][0])){
+				addiu2 = i;
+			}
+			//compare the second arugment
+			if(!strcmp(&memory[addiu1][3], registers[i][0])){
+				addiu3 = i;
+			}
+		}
+			//holds the value from the function call
+		int holdaddiu = addi(registers[addiu3][1], memory[addiu1][4]);
+		printf("\nADDIu:\n");
+		printf("%s was %s",registers[addiu2][0], &registers[addiu2][1]);
+		//this updates the reg array value
+		sprintf(&registers[addiu2][1], "%lu", holdaddiu);
+		printf("\nregister: %s has %s + %s\n",registers[addiu2][0], registers[addiu3][0], &memory[addiu1][4]);
+		printf("%s = %s\n",registers[addiu2][0],&registers[addiu2][1]);
+		}
+
+	if(!strcmp(&memory[m][1], instruction7)){
+		subu1 = m;
+		//goes through my reg array
+		for(int i = 0; i < 32; i++){
+			//grab the instructions and store them
+			if(!strcmp(&memory[subu1][2], registers[i][0])){
+				subu2 = i;
+			}
+			if(!strcmp(&memory[subu1][3], registers[i][0])){
+				subu3 = i;
+			}
+			if(!strcmp(&memory[subu1][4], registers[i][0])){
+				subu4 = i;
+			}
+
+
+			}
+			//holds the function call
+		int holdsubu = subaru(registers[subu3][1], &registers[subu4][1]);
+		printf("\nSUBU:\n");
+		printf("%s was %s",registers[subu2][0], &registers[subu2][1]);
+		//updates the reg array to the new value
+		sprintf(&registers[subu2][1], "%d", holdsubu);
+		printf("\nregister: %s has %s  %s\n",registers[subu2][0], registers[subu3][0], registers[subu4][0]);
+		printf("%s = %s\n",registers[subu2][0],&registers[subu2][1]);
+
+		}
+	}
 
 }	//passed strings
 int addi(char *reg1, char *reg2){
 	//conterts to int and adds them
 	int a = atoi(&reg1);
 	int b = atoi(&reg2);
-	int c = a + b;
+	unsigned c = a + b;
 	return c;
 }//passed strings
 int sub(char *reg1, char *reg2){
@@ -263,5 +334,14 @@ int bne(char *reg1, char *reg2){
 	else{
 		return 1;
 	}
+}
+unsigned addiu(char *reg1, char *reg2){
+	unsigned long a = 0;
+	unsigned long b = 0;
+	strtoul(&reg1, NULL, a);
+	strtoul(&reg2, NULL, b);
+	printf("a: %lu	b: %lu\n",a,b);
+	unsigned long c = a + b;
+	return c;
 }
 
