@@ -3,17 +3,6 @@
 #include <string.h>
 # define MAX_LINE 50
 
-//githubtest
-
-unsigned subaru(char *reg1, char *reg2){
-	unsigned long a = 0;
-	unsigned long b = 0;
-	strtoul(&reg1, NULL, a);
-	strtoul(&reg2, NULL, b);
-	unsigned long c = a - b;
-	return c;
-}
-
 int main(int arc, char *argv[]){
 	//Defines input
 	if(arc < 1){
@@ -106,7 +95,7 @@ int main(int arc, char *argv[]){
 	char instruction4[] = {'s','l','l','\0'};
 	char instruction5[] = {'b','n','e','\0'};
 	char instruction6[] = {'a', 'd', 'd', 'i', 'u', '\0'};
-	char instruction7[] = {'s', 'u', 'b', 'b', 'u', '\0'};
+	char instruction7[] = {'s', 'u', 'b', 'u', '\0'};
 	int addi1 = 0;
 	int addi2 = 0;
 	int addi3 = 0;
@@ -290,11 +279,13 @@ int main(int arc, char *argv[]){
 
 			}
 			//holds the function call
-		int holdsubu = subaru(registers[subu3][1], &registers[subu4][1]);
+		unsigned int a=1;
+		unsigned int b=2;
+		unsigned long holdsubu = subu(registers[sub3][1], registers[sub4][1]);
 		printf("\nSUBU:\n");
 		printf("%s was %s",registers[subu2][0], &registers[subu2][1]);
 		//updates the reg array to the new value
-		sprintf(&registers[subu2][1], "%d", holdsubu);
+		sprintf(&registers[subu2][1], "%lu", holdsubu);
 		printf("\nregister: %s has %s  %s\n",registers[subu2][0], registers[subu3][0], registers[subu4][0]);
 		printf("%s = %s\n",registers[subu2][0],&registers[subu2][1]);
 
@@ -345,3 +336,6 @@ unsigned addiu(char *reg1, char *reg2){
 	return c;
 }
 
+unsigned subu(char *string1, char *string2){
+	return 0;
+}
