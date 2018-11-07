@@ -72,6 +72,7 @@ int main(int arc, char *argv[]){
 		//sets 25 spaces for mips instructions
 
 	}
+	//i = 1000; i >= 900; i--
 	for(int i = 28; i <= 128; i++){
 		sprintf(&memory[i][0],"%x", hexvar);
 		sprintf(&memory[i][1],"%d", zero);
@@ -84,7 +85,7 @@ int main(int arc, char *argv[]){
 	}
 	for(int j = 0; j <= 128; j++){
 		for(int k = 0; k < 5; k++){
-			//printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
+			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
 		}
 	}
 	fclose(fp);
@@ -252,7 +253,7 @@ int main(int arc, char *argv[]){
 			}
 		}
 			//holds the value from the function call
-		int holdaddiu = addi(registers[addiu3][1], memory[addiu1][4]);
+		unsigned int holdaddiu = addiu(registers[addiu3][1], memory[addiu1][4]);
 		printf("\nADDIu:\n");
 		printf("%s was %s",registers[addiu2][0], &registers[addiu2][1]);
 		//this updates the reg array value
@@ -263,9 +264,7 @@ int main(int arc, char *argv[]){
 
 	if(!strcmp(&memory[m][1], instruction7)){
 		subu1 = m;
-		//goes through my reg array
 		for(int i = 0; i < 32; i++){
-			//grab the instructions and store them
 			if(!strcmp(&memory[subu1][2], registers[i][0])){
 				subu2 = i;
 			}
@@ -275,22 +274,11 @@ int main(int arc, char *argv[]){
 			if(!strcmp(&memory[subu1][4], registers[i][0])){
 				subu4 = i;
 			}
-
-
-			}
-			//holds the function call
-		unsigned int a=1;
-		unsigned int b=2;
-		unsigned long holdsubu = subu(registers[sub3][1], registers[sub4][1]);
-		printf("\nSUBU:\n");
-		printf("%s was %s",registers[subu2][0], &registers[subu2][1]);
-		//updates the reg array to the new value
-		sprintf(&registers[subu2][1], "%lu", holdsubu);
-		printf("\nregister: %s has %s  %s\n",registers[subu2][0], registers[subu3][0], registers[subu4][0]);
-		printf("%s = %s\n",registers[subu2][0],&registers[subu2][1]);
-
 		}
+		printf("\nSUBU\n");
+		unsigned int holdsubu = subu(registers[subu3][1], registers[subu4][1]);
 	}
+}
 
 }	//passed strings
 int addi(char *reg1, char *reg2){
@@ -336,6 +324,6 @@ unsigned addiu(char *reg1, char *reg2){
 	return c;
 }
 
-unsigned subu(char *string1, char *string2){
+unsigned subu(char *reg1, char *reg2){
 	return 0;
 }
