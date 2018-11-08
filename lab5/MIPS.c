@@ -225,8 +225,8 @@ int main(int arc, char *argv[]){
 				}
 			}
 			for(int j = 0; j <= 900; j++){
-				printf("%s\n",&memory[j][0]);
-				printf("bne1:%s\n",&memory[bne1][4]);
+				//printf("%s\n",&memory[j][0]);
+				//printf("bne1:%s\n",&memory[bne1][4]);
 				if(!strcmp(&memory[bne1][4], &memory[j][0])){
 					return 0;
 					bne4 = j;
