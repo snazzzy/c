@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 # define MAX_LINE 50
+unsigned int subu(char *reg1, char *reg2);
+unsigned int addiu(char *reg1, char *reg2);
+int addi(char *reg1, char *reg2);
+int sub(char *reg1, char *reg2);
+int jump(int index, int ammount);
+int bne(char *reg1, char *reg2);
 
 int main(int arc, char *argv[]){
 	//Defines input
@@ -51,39 +57,38 @@ int main(int arc, char *argv[]){
 		sscanf(place, "%s", &registers[i][1]);
 	}
 	//Prep for reading file into memory
-	char *memory[129][5];
+	char *memory[1001][5];
 	char line[MAX_LINE];
 	FILE *fp = fopen("mips.txt", "r");
 	char *temp;
+	char *trash;
 	int counter = 0;
 	int zero = 0;
-	int hexvar = 400;
-
-	//grabes a line, and uses sscan to input arguments into memory
-	while(fgets(line, 40, fp)){
-
-		if(sscanf(line, " %40[^, ^\t], %40[^, ^\t], %40[^,^\t], %40[^,^\t], %s ", &memory[counter][0], &memory[counter][1], &memory[counter][2], &memory[counter][3], &memory[counter][4])){
-			counter++;
-		}
-		if(counter >= 28){
-			printf("Stack Smashing Detected");
-			exit(0);
-		}
-		//sets 25 spaces for mips instructions
-
-	}
-	//i = 1000; i >= 900; i--
-	for(int i = 28; i <= 128; i++){
+	int hexvar = 0;
+	int hexvar2 = 400;
+	for(int i = 0; i <= 1000; i++){
 		sprintf(&memory[i][0],"%x", hexvar);
 		sprintf(&memory[i][1],"%d", zero);
 		sprintf(&memory[i][2],"%d", zero);
 		sprintf(&memory[i][3],"%d", zero);
-		sprintf(&memory[i][4],"%d", zero);
-		hexvar = hexvar -4;
-		//printf("asd %i\n", hexvar);
+		sprintf(&memory[i][4], "%d", zero);	
+		hexvar = hexvar +4;	
+	}
+
+	//grabes a line, and uses sscan to input arguments into memory
+	while(fgets(line, 40, fp)){
+		if(sscanf(line, "%40[^, ^\t]", &temp)){
+			printf("temp: %s\n", &temp);
+			for(int i = 0; i <= 900; i++){
+				if(!strcmp(&temp, &memory[i][0])){
+					printf("in if %i\n",i);
+					sscanf(line, " %40[^,^\n], %40[^,^\n], %40[^,^\n], %40[^,^\n], %40[^,^\n]", &memory[i][0], &memory[i][1], &memory[i][2], &memory[i][3], &memory[i][4]);
+				}
+			}
+		}
 
 	}
-	for(int j = 0; j <= 128; j++){
+	for(int j = 0; j <= 1000; j++){
 		for(int k = 0; k < 5; k++){
 			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
 		}
@@ -133,8 +138,8 @@ int main(int arc, char *argv[]){
 	int jmpcntr = 0;
 	int m = 0;
 	int f = 0;
-	//this loop goes through the entire memory[][] to compare 
-	for(m; m < counter; m++){
+	//this loop goes through the entire memory[][] to compare
+	for(m; m <=901; m++){
 		//grabs the location (line) of the first instruction
 		if(strcmp(&memory[m][1], instruction1) == 0){
 			addi1 = m;
@@ -159,7 +164,7 @@ int main(int arc, char *argv[]){
 			printf("%s = %s\n",registers[addi2][0],&registers[addi2][1]);
 		}
 		//captures the instruction on the line
-		if(!strcmp(&memory[m][1], instruction2)){
+		else if(!strcmp(&memory[m][1], instruction2)){
 			sub1 = m;
 			//goes through my reg array
 			for(int i = 0; i < 32; i++){
@@ -188,9 +193,9 @@ int main(int arc, char *argv[]){
 		}
 
 
-		if(!strcmp(&memory[m][1], instruction4)){
+		else if(!strcmp(&memory[m][1], instruction4)){
 			sll1 = m;
-			
+
 			for(int b = 0; b < 32; b++){
 				if(!strcmp(&memory[sll1][2], registers[b][0])){
 					sll2 = b;
@@ -207,39 +212,47 @@ int main(int arc, char *argv[]){
 			printf("%s = %s\n",registers[sll2][0],&registers[sll2][1]);
 		}
 		//grabs the new instruction
-		if(!strcmp(&memory[m][1], instruction5)){
+		else if(!strcmp(&memory[m][1], instruction5)){
 			bne1 = m;
 		//goes through the reg array
-		for(int d = 0; d < 32; d++){
+			for(int d = 0; d < 32; d++){
 			//grabs the instructions and store them
-			if(!strcmp(&memory[bne1][2], registers[d][0])){
-				bne2 = d;
+				if(!strcmp(&memory[bne1][2], registers[d][0])){
+					bne2 = d;
+				}
+				if(!strcmp(&memory[bne1][3], registers[d][0])){
+					bne3 = d;
+				}
 			}
-			if(!strcmp(&memory[bne1][3], registers[d][0])){
-				bne3 = d;
+			for(int j = 0; j <= 900; j++){
+				printf("%s\n",&memory[j][0]);
+				printf("bne1:%s\n",&memory[bne1][4]);
+				if(!strcmp(&memory[bne1][4], &memory[j][0])){
+					return 0;
+					bne4 = j;
+					printf("asdf");
+					printf("\nbne4:%i",bne4);
+				}
 			}
-			if(!strcmp(&memory[bne1][4], &memory[d][0])){
-				bne4 = d;
-			}
-		}	//holds the value from the function call
 			int holdbne = bne(registers[bne2][1], registers[bne3][1]);
-			//the function returns true of false
+			printf("\nBNE\n");
 			if(holdbne == 1){
 				//if true
-				m = bne4 -1;
-				printf("\nBNE\n");
 				printf("%s(%s) != %s(%s)\n",registers[bne2][0],&registers[bne2][1], registers[bne3][0],&registers[bne3][1]);
 				printf("jumped to \"%s\"\n", &memory[bne1][4]);
+				printf("bne4 = %i\n", bne4);
+				m = bne4;
+
 			}else{
 				//else do nothing becuase this print statement doesnt work
 				printf("%s == %s\n",registers[bne2][0], registers[bne3][0]);
 			}
 
 		}
-		
-	
+
+
 			//grabs the location (line) of the first instruction
-	if(strcmp(&memory[m][1], instruction6) == 0){
+	else if(strcmp(&memory[m][1], instruction6) == 0){
 		addiu1 = m;
 		//this loop is to go through my register array
 		for(int i = 0; i < 32; i++){
@@ -262,7 +275,7 @@ int main(int arc, char *argv[]){
 		printf("%s = %s\n",registers[addiu2][0],&registers[addiu2][1]);
 		}
 
-	if(!strcmp(&memory[m][1], instruction7)){
+	else if(!strcmp(&memory[m][1], instruction7)){
 		subu1 = m;
 		for(int i = 0; i < 32; i++){
 			if(!strcmp(&memory[subu1][2], registers[i][0])){
@@ -276,11 +289,28 @@ int main(int arc, char *argv[]){
 			}
 		}
 		printf("\nSUBU\n");
+		printf("%s was %s",registers[subu2][0], &registers[subu2][1]);
 		unsigned int holdsubu = subu(registers[subu3][1], registers[subu4][1]);
+		sprintf(&registers[subu2][1], "%lu", holdsubu);
+		printf("\nregister: %s has %s + %s\n",registers[subu2][0], registers[subu3][0], registers[subu4][0]);
+		printf("%s = %s\n",registers[subu2][0],&registers[subu2][1]);
+
+
+	}
+	else if(!strcmp(&memory[m][1], instruction3)){
+		printf("\nJUMP\n");
+		for(int j = 0; j <= 900; j++){
+			if(!strcmp(&memory[bne1][4], &memory[j][4])){
+				j1 = j;
+				printf("jumping to %i\n",j1);
+			}
+			m = j1;	
+
+		}
+	}
 	}
 }
-
-}	//passed strings
+	//passed strings
 int addi(char *reg1, char *reg2){
 	//conterts to int and adds them
 	int a = atoi(&reg1);
@@ -314,7 +344,7 @@ int bne(char *reg1, char *reg2){
 		return 1;
 	}
 }
-unsigned addiu(char *reg1, char *reg2){
+unsigned int addiu(char *reg1, char *reg2){
 	unsigned long a = 0;
 	unsigned long b = 0;
 	strtoul(&reg1, NULL, a);
@@ -324,6 +354,11 @@ unsigned addiu(char *reg1, char *reg2){
 	return c;
 }
 
-unsigned subu(char *reg1, char *reg2){
-	return 0;
+unsigned int subu(char *reg1, char *reg2){
+	unsigned long a = 0;
+	unsigned long b = 0;
+	strtoul(&reg1, NULL, a);
+	strtoul(&reg2, NULL, b);
+	unsigned long c = a - b;
+	return c;
 }
