@@ -225,12 +225,12 @@ int main(int arc, char *argv[]){
 				}
 			}
 			for(int j = 0; j <= 900; j++){
+				int asize = strlen(&memory[bne1][4]);
 				//printf("%s\n",&memory[j][0]);
 				//printf("bne1:%s\n",&memory[bne1][4]);
-				if(!strcmp(&memory[bne1][4], &memory[j][0])){
-					return 0;
+				//printf("asize: %i\n",asize);
+				if(!strncmp(&memory[j][0], &memory[bne1][4], asize-1)){
 					bne4 = j;
-					printf("asdf");
 					printf("\nbne4:%i",bne4);
 				}
 			}
