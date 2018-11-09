@@ -6,10 +6,11 @@ unsigned int subu(char *reg1, char *reg2);
 unsigned int addiu(char *reg1, char *reg2);
 int addi(char *reg1, char *reg2);
 int sub(char *reg1, char *reg2);
-int jump(int index, int ammount);
+int jump(int bol);
 int bne(char *reg1, char *reg2);
 int li(char *number);
 int add(char *reg2, char *reg3);
+int jal(char *arg1);
 
 int main(int arc, char *argv[]){
 	//Defines input
@@ -21,7 +22,7 @@ int main(int arc, char *argv[]){
 	char *registers[32][2];
 	registers[0][0] = "$zero";
 	registers[1][0] = "$at";
-	registers[2][0] = "$at";
+	registers[2][0] = "$ra";
 	registers[3][0] = "$v0";
 	registers[4][0] = "$v1";
 	registers[5][0] = "$a0";
@@ -106,6 +107,8 @@ int main(int arc, char *argv[]){
 	char instruction7[] = {'s', 'u', 'b', 'u', '\0'};
 	char instruction8[] = {'l','i','\0'};
 	char instruction9[] = {'a', 'd', 'd', '\0'};
+	char instruction10[] = {'j', 'a', 'l', '\0'};
+	char instruction11[] = {'j', 'r', '\0'};
 	int addi1 = 0;
 	int addi2 = 0;
 	int addi3 = 0;
@@ -139,21 +142,39 @@ int main(int arc, char *argv[]){
 	int add2 = 0;
 	int add3 = 0;
 	int add4 = 0;
+	int jal1 = 0;
+	int jal2 = 0;
+	int jal3 = 0;
+	int jal4 = 0;
+	int jr1 = 0;
+	int jr2 = 0;
+	int jr3 = 0;
+	//flag1 is used to break jump when bne is equal.
 	int flag1 = 1;
 	int flag2 = 1;
 	int flag3 = 1;
 	int flag4 = 1;
-	int test1 = 1;
-	int test2 = 1;
-	int test3 = 1;
+	//test1 is used to calc the total result of addi
+	int test1 = 0;
+	//test2 is used to calc the total result of sub
+	int test2 = 0;
+	//test3 is used to calc the total result of add
+	int test3 = 0;
+	//test4 is used to calc the total result of addiu
+	unsigned long test4 = 0;
+	//test5 is used to calc the total result of subu
+	unsigned long test5 = 0;
+	unsigned long subuhold = 0;
+	unsigned long addiuhold = 0;
+	int jalhold = 0;
 	int jmpcntr = 0;
 	int m = 0;
-	int f = 0;
 	//this loop goes through the entire memory[][] to compare
 	for(m; m <=901; m++){
 		//grabs the location (line) of the first instruction
 		if(strcmp(&memory[m][1], instruction1) == 0){
 			addi1 = m;
+		
 		//this loop is to go through my register array
 		for(int i = 0; i < 32; i++){
 			//here i compare the first argument
@@ -167,10 +188,11 @@ int main(int arc, char *argv[]){
 		}
 			//holds the value from the function call
 			int holdaddi = addi(registers[addi3][1], memory[addi1][4]);
+			test1 = holdaddi + atoi(&registers[addi2][1]);
 			printf("\nADDI:\n");
 			printf("%s was %s",registers[addi2][0], &registers[addi2][1]);
 			//this updates the reg array value
-			sprintf(&registers[addi2][1], "%d", holdaddi);
+			sprintf(&registers[addi2][1], "%d", test1);
 			printf("\nregister: %s has %s + %s\n",registers[addi2][0], registers[addi3][0], &memory[addi1][4]);
 			printf("%s = %s\n",registers[addi2][0],&registers[addi2][1]);
 		}
@@ -194,10 +216,11 @@ int main(int arc, char *argv[]){
 			}
 			//holds the function call
 			int holdsub = sub(registers[sub3][1], &registers[sub4][1]);
+			test2 = holdsub + atoi(&registers[sub2][1]);
 			printf("\nSUB:\n");
 			printf("%s was %s",registers[sub2][0], &registers[sub2][1]);
 			//updates the reg array to the new value
-			sprintf(&registers[sub2][1], "%d", holdsub);
+			sprintf(&registers[sub2][1], "%d", test2);
 			printf("\nregister: %s has %s  %s\n",registers[sub2][0], registers[sub3][0], registers[sub4][0]);
 			printf("%s = %s\n",registers[sub2][0],&registers[sub2][1]);
 
@@ -217,9 +240,10 @@ int main(int arc, char *argv[]){
 				}
 			}
 			int holdadd = add(registers[add3][1], registers[add4][1]);
+			test3 = holdadd + atoi(&registers[add2][1]);
 			printf("\nADD\n");
 			printf("%s was %s",registers[add2][0], &registers[add2][1]);
-			sprintf(&registers[add2][1], "%d", holdadd);
+			sprintf(&registers[add2][1], "%d", test3);
 			printf("\nregister: %s has %s + %s\n",registers[add2][0], registers[add3][0], registers[add4][0]);
 			printf("%s = %s\n",registers[add2][0],&registers[add2][1]);
 
@@ -275,11 +299,13 @@ int main(int arc, char *argv[]){
 				printf("%s(%s) != %s(%s)\n",registers[bne2][0],&registers[bne2][1], registers[bne3][0],&registers[bne3][1]);
 				printf("jumped to \"%s\"\n", &memory[bne1][4]);
 				printf("bne4 = %i\n", bne4);
+				flag1 = 1;
 				m = bne4 -1;
 
 			}else{
 				//else do nothing becuase this print statement doesnt work
 				printf("%s == %s\n",registers[bne2][0], registers[bne3][0]);
+				flag1 =0;
 			}
 
 		}
@@ -301,10 +327,12 @@ int main(int arc, char *argv[]){
 		}
 			//holds the value from the function call
 		unsigned int holdaddiu = addiu(registers[addiu3][1], memory[addiu1][4]);
+		addiuhold = atol(&registers[addiu2][1]);
+		test4 = holdaddiu + addiuhold;
 		printf("\nADDIu:\n");
 		printf("%s was %s",registers[addiu2][0], &registers[addiu2][1]);
 		//this updates the reg array value
-		sprintf(&registers[addiu2][1], "%lu", holdaddiu);
+		sprintf(&registers[addiu2][1], "%lu", test4);
 		printf("\nregister: %s has %s + %s\n",registers[addiu2][0], registers[addiu3][0], &memory[addiu1][4]);
 		printf("%s = %s\n",registers[addiu2][0],&registers[addiu2][1]);
 		}
@@ -326,7 +354,9 @@ int main(int arc, char *argv[]){
 		printf("\nSUBU\n");
 		printf("%s was %s",registers[subu2][0], &registers[subu2][1]);
 		unsigned int holdsubu = subu(registers[subu3][1], registers[subu4][1]);
-		sprintf(&registers[subu2][1], "%lu", holdsubu);
+		subuhold = atol(&registers[subu2][1]);
+		test5 = holdsubu + subuhold;
+		sprintf(&registers[subu2][1], "%lu", test5);
 		printf("\nregister: %s has %s + %s\n",registers[subu2][0], registers[subu3][0], registers[subu4][0]);
 		printf("%s = %s\n",registers[subu2][0],&registers[subu2][1]);
 
@@ -334,12 +364,17 @@ int main(int arc, char *argv[]){
 	}
 	else if(!strcmp(&memory[m][1], instruction3)){
 		printf("\nJUMP\n");
+		if(flag1 == 0){
+			printf("jump skipped\n");
+			flag1= 0;
+			continue;
+		}
 		for(int j = 0; j <= 900; j++){
 			if(!strcmp(&memory[bne1][4], &memory[j][4])){
 				j1 = j;
 				printf("jumping to %i\n",j1);
 			}
-			m = j1;	
+			m = j1-1;	
 
 		}
 	}
@@ -349,7 +384,6 @@ int main(int arc, char *argv[]){
 		for(int i = 0; i < 32; i++){
 			if(!strcmp(&memory[li1][2], registers[i][0])){
 				li2 = i;
-				printf("match%i\n",li2);
 			}
 		}
 		printf("\nLI\n");
@@ -357,16 +391,52 @@ int main(int arc, char *argv[]){
 		sprintf(&registers[li2][1], "%d", holdli);
 		printf("\nregister:%s now has %s\n",registers[li2][0], &registers[li2][1]);
 	}
-	
+
+	else if(!strcmp(&memory[m][1], instruction10)){
+
+		jal1 = m;
+		int asize = strlen(&memory[jal1][2]);
+		//go through mem array to find a match for jal to jmp to
+		for(int i = 0; i <= 900; i++){
+			if(!strncmp(&memory[jal1][2], &memory[i][0], asize-1)){
+				jal2 = i;
+			}
+		}
+		jal3 = m +1;
+		strcpy(&registers[2][1], &memory[jal3][0]);
+		printf("jal2: %i\n",jal2);
+		printf("REG RA:::%s\n", &registers[2][1]);
+		printf("m before: %i\n", m);
+		flag2 = 1;
+		m = jal2-1;
+		printf("m after: %i\n", m);
+
+	}
+	//matches the first instruction
+	else if(!strcmp(&memory[m][1], instruction11) && flag2 == 1){
+		//stores the memory address to jump to in $ra register
+		printf("JR\n");
+		for(int f = 0; f <= 900; f++){
+			if(!strcmp(&memory[f][0], &registers[2][1])){
+				jr2 = f;
+			}
+		}
+			printf("jumping to index %i\n",jr2);
+			flag2 = 0;
+			m = jr2;
+
 
 	}
 }
+
+}
+//combonation of J and JR cuases loop. 
 	//passed strings
 int addi(char *reg1, char *reg2){
 	//conterts to int and adds them
 	int a = atoi(&reg1);
 	int b = atoi(&reg2);
-	unsigned c = a + b;
+	int c = a + b;
 	return c;
 }//passed strings
 int sub(char *reg1, char *reg2){
@@ -375,9 +445,13 @@ int sub(char *reg1, char *reg2){
 	int b = atoi(&reg2);
 	int c = a - b;
 	return c;
-}//doesnt work. leaving in becuase I have to implement it for part 2
-int jump(int index, int ammount){
-	return index - ammount;
+}//doesnt work.
+int jump(int bol){
+	if(bol == 1){
+		return 0;
+	}else{
+		return 1;
+	}
 }//passed strings
 int sll(char *reg1, char *reg2){
 	//converts to int and shifts them
@@ -396,20 +470,16 @@ int bne(char *reg1, char *reg2){
 	}
 }
 unsigned int addiu(char *reg1, char *reg2){
-	unsigned long a = 0;
-	unsigned long b = 0;
-	strtoul(&reg1, NULL, a);
-	strtoul(&reg2, NULL, b);
+	unsigned long a = atol(&reg1);
+	unsigned long b = atol(&reg2);
 	printf("a: %lu	b: %lu\n",a,b);
 	unsigned long c = a + b;
 	return c;
 }
 
 unsigned int subu(char *reg1, char *reg2){
-	unsigned long a = 0;
-	unsigned long b = 0;
-	strtoul(&reg1, NULL, a);
-	strtoul(&reg2, NULL, b);
+	unsigned long a = atol(&reg1);
+	unsigned long b = atol(&reg2);
 	unsigned long c = a - b;
 	return c;
 }
@@ -423,4 +493,19 @@ int add(char *reg1, char *reg2){
 	int b = atoi(&reg2);
 	int c = a + b;
 	return c;
+}
+int jal(char *arg1){
+	printf("\n JAL()\n");
+	printf("arg1: %s\n",arg1);
+	int a = 0;
+	int b = atoi(arg1);
+	printf("arg1: %i\n", b);
+	if(a == b){
+		printf("returning 0\n");
+		return 0;
+	}else{
+		a = b;
+		printf("returning 1\n");
+		return 1;
+	}
 }
