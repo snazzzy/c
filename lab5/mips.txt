@@ -1,16 +1,19 @@
-200, addi, $t0, $zero, 5
-204, addi, $t1, $t0, 69
-208, sub, $s1, $t0, $t1
-21c, sll, $t0, $t0, 1
-220, sub, $s3, $zero, $t0
-224, bne, $t0, $t1, 230
-228, addi, $t1, $t1, 1903
-22c, sll, $t1, $t0, 2
-230, sll, $s0, $t0, 4
-234, sub, $s5, $t1, $t0
-538, addiu, $s3, $t0, 5
-32c, subu, $s0, $t1, $t0
-240, li, $t3, 904
-244, add, $t5, $t0, $t1
-248, 
+200, jal, 208
+204, jal, 214
+208, addi, $s2, $zero, 6
+20c, addi, $s1, $zero, 2
+210, jal, 214
+214, bne, $s1, $s2, 218
+218, addi, $s1, $zero, 1
+21c, j, 214
+220, jr, $ra
+224, add, $t0, $s1, $s2
+228, add, $t0, $s1, $s2
+22c, add, $t0, $s1, $s2
+230, add, $t0, $s1, $s2
+238, jr, $ra
+23c, addiu, $t0, $s1, $s2
+240, subu, $t0, $s1, $s2
+244, subu, $t0, $s1, $s2
+248, li, $t0, 200
 24c,
