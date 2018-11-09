@@ -8,6 +8,8 @@ int addi(char *reg1, char *reg2);
 int sub(char *reg1, char *reg2);
 int jump(int index, int ammount);
 int bne(char *reg1, char *reg2);
+int li(char *number);
+int add(char *reg2, char *reg3);
 
 int main(int arc, char *argv[]){
 	//Defines input
@@ -102,6 +104,8 @@ int main(int arc, char *argv[]){
 	char instruction5[] = {'b','n','e','\0'};
 	char instruction6[] = {'a', 'd', 'd', 'i', 'u', '\0'};
 	char instruction7[] = {'s', 'u', 'b', 'u', '\0'};
+	char instruction8[] = {'l','i','\0'};
+	char instruction9[] = {'a', 'd', 'd', '\0'};
 	int addi1 = 0;
 	int addi2 = 0;
 	int addi3 = 0;
@@ -128,6 +132,13 @@ int main(int arc, char *argv[]){
 	int subu3 = 0;
 	int subu4 = 0;
 	int subu5 = 0;
+	int li1 = 0;
+	int li2 = 0;
+	int li3 = 0;
+	int add1 = 0;
+	int add2 = 0;
+	int add3 = 0;
+	int add4 = 0;
 	int flag1 = 1;
 	int flag2 = 1;
 	int flag3 = 1;
@@ -166,6 +177,7 @@ int main(int arc, char *argv[]){
 		//captures the instruction on the line
 		else if(!strcmp(&memory[m][1], instruction2)){
 			sub1 = m;
+			int asize = strlen(&memory[sub1][4]);
 			//goes through my reg array
 			for(int i = 0; i < 32; i++){
 				//grab the instructions and store them
@@ -175,10 +187,9 @@ int main(int arc, char *argv[]){
 				if(!strcmp(&memory[sub1][3], registers[i][0])){
 					sub3 = i;
 				}
-				if(!strcmp(&memory[sub1][4], registers[i][0])){
+				if(!strncmp(&memory[sub1][4], registers[i][0], asize-1)){
 					sub4 = i;
 				}
-
 
 			}
 			//holds the function call
@@ -189,6 +200,29 @@ int main(int arc, char *argv[]){
 			sprintf(&registers[sub2][1], "%d", holdsub);
 			printf("\nregister: %s has %s  %s\n",registers[sub2][0], registers[sub3][0], registers[sub4][0]);
 			printf("%s = %s\n",registers[sub2][0],&registers[sub2][1]);
+
+		}
+		else if(!strcmp(&memory[m][1], instruction9)){
+			add1 = m;
+			int asize = strlen(&memory[add1][4]);
+			for(int i = 0; i < 32; i++){
+				if(!strcmp(&memory[add1][2], registers[i][0])){
+					add2 = i;
+				}
+				if(!strcmp(&memory[add1][3], registers[i][0])){
+					add3 = i;
+				}
+				if(!strncmp(&memory[add1][4], registers[i][0], asize-1)){
+					add4 = i;
+				}
+			}
+			int holdadd = add(registers[add3][1], registers[add4][1]);
+			printf("\nADD\n");
+			printf("%s was %s",registers[add2][0], &registers[add2][1]);
+			sprintf(&registers[add2][1], "%d", holdadd);
+			printf("\nregister: %s has %s + %s\n",registers[add2][0], registers[add3][0], registers[add4][0]);
+			printf("%s = %s\n",registers[add2][0],&registers[add2][1]);
+
 
 		}
 
@@ -241,7 +275,7 @@ int main(int arc, char *argv[]){
 				printf("%s(%s) != %s(%s)\n",registers[bne2][0],&registers[bne2][1], registers[bne3][0],&registers[bne3][1]);
 				printf("jumped to \"%s\"\n", &memory[bne1][4]);
 				printf("bne4 = %i\n", bne4);
-				m = bne4;
+				m = bne4 -1;
 
 			}else{
 				//else do nothing becuase this print statement doesnt work
@@ -277,6 +311,7 @@ int main(int arc, char *argv[]){
 
 	else if(!strcmp(&memory[m][1], instruction7)){
 		subu1 = m;
+		int asize = strlen(&memory[subu1][4]);
 		for(int i = 0; i < 32; i++){
 			if(!strcmp(&memory[subu1][2], registers[i][0])){
 				subu2 = i;
@@ -284,7 +319,7 @@ int main(int arc, char *argv[]){
 			if(!strcmp(&memory[subu1][3], registers[i][0])){
 				subu3 = i;
 			}
-			if(!strcmp(&memory[subu1][4], registers[i][0])){
+			if(!strncmp(&memory[subu1][4], registers[i][0], asize-1)){
 				subu4 = i;
 			}
 		}
@@ -308,6 +343,22 @@ int main(int arc, char *argv[]){
 
 		}
 	}
+	else if(!strcmp(&memory[m][1], instruction8)){
+		li1 = m;
+		printf("li1 %i\n",li1);
+		for(int i = 0; i < 32; i++){
+			if(!strcmp(&memory[li1][2], registers[i][0])){
+				li2 = i;
+				printf("match%i\n",li2);
+			}
+		}
+		printf("\nLI\n");
+		int holdli = li(memory[li1][3]);
+		sprintf(&registers[li2][1], "%d", holdli);
+		printf("\nregister:%s now has %s\n",registers[li2][0], &registers[li2][1]);
+	}
+	
+
 	}
 }
 	//passed strings
@@ -360,5 +411,16 @@ unsigned int subu(char *reg1, char *reg2){
 	strtoul(&reg1, NULL, a);
 	strtoul(&reg2, NULL, b);
 	unsigned long c = a - b;
+	return c;
+}
+int li(char *number){
+	int a = atoi(&number);
+	return a;
+
+}
+int add(char *reg1, char *reg2){
+	int a = atoi(&reg1);
+	int b = atoi(&reg2);
+	int c = a + b;
 	return c;
 }
