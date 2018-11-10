@@ -1,17 +1,19 @@
-200, jal, 208
-204, jal, 214
-208, addi, $s2, $zero, 6
+1f8, jal, 208
+1fc, 
+200, addi, $t5, $zero, $s1
+204, j, 224
+208, addi, $s2, $zero, 2
 20c, addi, $s1, $zero, 2
-210, jal, 214
-214, bne, $s1, $s2, 218
+210, addi, $s0, $zero, 18
+214, bne, $s1, $s2, 220
 218, addi, $s1, $zero, 1
 21c, j, 214
 220, jr, $ra
-224, add, $t0, $s1, $s2
+224, addi, $t0, $s1, 12
 228, add, $t0, $s1, $s2
 22c, add, $t0, $s1, $s2
 230, add, $t0, $s1, $s2
-238, jr, $ra
+238,
 23c, addiu, $t0, $s1, $s2
 240, subu, $t0, $s1, $s2
 244, subu, $t0, $s1, $s2
