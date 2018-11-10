@@ -284,9 +284,7 @@ int main(int arc, char *argv[]){
 			}
 			for(int j = 0; j <= 900; j++){
 				int asize = strlen(&memory[bne1][4]);
-				//printf("%s\n",&memory[j][0]);
-				//printf("bne1:%s\n",&memory[bne1][4]);
-				//printf("asize: %i\n",asize);
+				//grabs the memory address to jump to
 				if(!strncmp(&memory[j][0], &memory[bne1][4], asize-1)){
 					bne4 = j;
 					printf("\nbne4:%i",bne4);
@@ -294,18 +292,17 @@ int main(int arc, char *argv[]){
 			}
 			int holdbne = bne(registers[bne2][1], registers[bne3][1]);
 			printf("\nBNE\n");
-			if(holdbne == 1){
+			if(holdbne == 0){
 				//if true
-				printf("%s(%s) != %s(%s)\n",registers[bne2][0],&registers[bne2][1], registers[bne3][0],&registers[bne3][1]);
+				printf("%s(%s) == %s(%s)\n",registers[bne2][0],&registers[bne2][1], registers[bne3][0],&registers[bne3][1]);
 				printf("jumped to \"%s\"\n", &memory[bne1][4]);
 				printf("bne4 = %i\n", bne4);
 				flag1 = 1;
-				m = bne4 -1;
 
 			}else{
-				//else do nothing becuase this print statement doesnt work
-				printf("%s == %s\n",registers[bne2][0], registers[bne3][0]);
-				flag1 =0;
+				printf("%s != %s\n",registers[bne2][0], registers[bne3][0]);
+				flag1 = 0;
+				m = bne4-1;
 			}
 
 		}
@@ -327,7 +324,7 @@ int main(int arc, char *argv[]){
 		}
 			//holds the value from the function call
 		unsigned int holdaddiu = addiu(registers[addiu3][1], memory[addiu1][4]);
-		addiuhold = atol(&registers[addiu2][1]);
+		addiuhold = atoi(&registers[addiu2][1]);
 		test4 = holdaddiu + addiuhold;
 		printf("\nADDIu:\n");
 		printf("%s was %s",registers[addiu2][0], &registers[addiu2][1]);
@@ -353,28 +350,32 @@ int main(int arc, char *argv[]){
 		}
 		printf("\nSUBU\n");
 		printf("%s was %s",registers[subu2][0], &registers[subu2][1]);
-		unsigned int holdsubu = subu(registers[subu3][1], registers[subu4][1]);
+		unsigned long holdsubu = subu(registers[subu3][1], registers[subu4][1]);
 		subuhold = atol(&registers[subu2][1]);
 		test5 = holdsubu + subuhold;
+		printf("\ntest5: : %i\n");
 		sprintf(&registers[subu2][1], "%lu", test5);
 		printf("\nregister: %s has %s + %s\n",registers[subu2][0], registers[subu3][0], registers[subu4][0]);
 		printf("%s = %s\n",registers[subu2][0],&registers[subu2][1]);
 
 
 	}
-	else if(!strcmp(&memory[m][1], instruction3)){
+	else if(!(strcmp(&memory[m][1], instruction3))){
 		printf("\nJUMP\n");
-		if(flag1 == 0){
-			printf("jump skipped\n");
-			flag1= 0;
-			continue;
-		}
+		printf("jump # %i\n", flag4);
+		flag4++;
+		j1 = m;
 		for(int j = 0; j <= 900; j++){
-			if(!strcmp(&memory[bne1][4], &memory[j][4])){
-				j1 = j;
+			//bne is my problem. It only jumps to branch.
+			//if(!strcmp(&memory[bne1][4], &memory[j][4])){
+			//printf("mem1: %s\n", &memory[j1][2]);
+			//printf("mem2: %s\n", &memory[j][0]);
+			int asize =strlen(&memory[j1][2]);
+			if(!strncmp(&memory[j1][2], &memory[j][0], asize-1)){
+				j3 = j;
 				printf("jumping to %i\n",j1);
-			}
-			m = j1-1;	
+				m = j3-1;
+			}	
 
 		}
 	}
@@ -404,7 +405,7 @@ int main(int arc, char *argv[]){
 		}
 		jal3 = m +1;
 		strcpy(&registers[2][1], &memory[jal3][0]);
-		printf("jal2: %i\n",jal2);
+		printf("jal: %i\n",jal2);
 		printf("REG RA:::%s\n", &registers[2][1]);
 		printf("m before: %i\n", m);
 		flag2 = 1;
@@ -413,7 +414,7 @@ int main(int arc, char *argv[]){
 
 	}
 	//matches the first instruction
-	else if(!strcmp(&memory[m][1], instruction11) && flag2 == 1){
+	else if(!strcmp(&memory[m][1], instruction11)){
 		//stores the memory address to jump to in $ra register
 		printf("JR\n");
 		for(int f = 0; f <= 900; f++){
@@ -462,11 +463,11 @@ int sll(char *reg1, char *reg2){
 }//passed strings
 int bne(char *reg1, char *reg2){
 	//if the strings do not equal, return true
-	if(strcmp(&reg1, &reg2) == 0){
-		return 0;
+	if(strcmp(&reg1, &reg2)){
+		return 1;
 	}
 	else{
-		return 1;
+		return 0;
 	}
 }
 unsigned int addiu(char *reg1, char *reg2){
@@ -478,10 +479,19 @@ unsigned int addiu(char *reg1, char *reg2){
 }
 
 unsigned int subu(char *reg1, char *reg2){
+	printf("\nreg1 = %s\n reg2 = %s\n", &reg1, &reg2);
 	unsigned long a = atol(&reg1);
 	unsigned long b = atol(&reg2);
-	unsigned long c = a - b;
-	return c;
+	if( a < b){
+		printf("unsigned out of bounds ( result - );");
+		return 0;
+	}else{
+	long c = a - b;
+	printf("\nin subu() c = %lu\n",c);
+	return c;	
+	}
+
+
 }
 int li(char *number){
 	int a = atoi(&number);
