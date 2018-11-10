@@ -11,6 +11,7 @@ int bne(char *reg1, char *reg2);
 int li(char *number);
 int add(char *reg2, char *reg3);
 int jal(char *arg1);
+int stackp(char *reg1, int move, int sp);
 
 int main(int arc, char *argv[]){
 	//Defines input
@@ -109,6 +110,7 @@ int main(int arc, char *argv[]){
 	char instruction9[] = {'a', 'd', 'd', '\0'};
 	char instruction10[] = {'j', 'a', 'l', '\0'};
 	char instruction11[] = {'j', 'r', '\0'};
+	char instruction12[] = {'s', 'w', '\0'};
 	int addi1 = 0;
 	int addi2 = 0;
 	int addi3 = 0;
@@ -149,6 +151,10 @@ int main(int arc, char *argv[]){
 	int jr1 = 0;
 	int jr2 = 0;
 	int jr3 = 0;
+	int sw1 = 0;
+	int sw2 = 0;
+	int sw3 = 0;
+	int sw4 = 0;
 	//flag1 is used to break jump when bne is equal.
 	int flag1 = 1;
 	int flag2 = 1;
@@ -169,6 +175,9 @@ int main(int arc, char *argv[]){
 	int jalhold = 0;
 	int jmpcntr = 0;
 	int m = 0;
+	int sp = 1000;
+	sprintf(&memory[30][1], "%d", sp);
+
 	//this loop goes through the entire memory[][] to compare
 	for(m; m <=901; m++){
 		//grabs the location (line) of the first instruction
@@ -323,7 +332,7 @@ int main(int arc, char *argv[]){
 			}
 		}
 			//holds the value from the function call
-		unsigned int holdaddiu = addiu(registers[addiu3][1], memory[addiu1][4]);
+		unsigned int holdaddiu = addiu(registers[addiu3][1], &memory[addiu1][4]);
 		addiuhold = atoi(&registers[addiu2][1]);
 		test4 = holdaddiu + addiuhold;
 		printf("\nADDIu:\n");
@@ -364,12 +373,9 @@ int main(int arc, char *argv[]){
 		printf("\nJUMP\n");
 		printf("jump # %i\n", flag4);
 		flag4++;
+		//captures insturction line at memory
 		j1 = m;
 		for(int j = 0; j <= 900; j++){
-			//bne is my problem. It only jumps to branch.
-			//if(!strcmp(&memory[bne1][4], &memory[j][4])){
-			//printf("mem1: %s\n", &memory[j1][2]);
-			//printf("mem2: %s\n", &memory[j][0]);
 			int asize =strlen(&memory[j1][2]);
 			if(!strncmp(&memory[j1][2], &memory[j][0], asize-1)){
 				j3 = j;
@@ -428,11 +434,40 @@ int main(int arc, char *argv[]){
 
 
 	}
-}
+	else if(!strcmp(&memory[m][1], instruction12)){
+		sw1 = m;
+		int move = 1;
+		int asize = strlen(&memory[sw1][2]);
+		for(int i = 0; i < 32; i++){
+			if(!strncmp(&memory[sw1][2], registers[i][0], asize-1)){
+				sw2 = i;
+			}
+			if(!strncmp(&memory[sw1][3], registers[i][0], asize -1)){
+				//this is the stack pointer register
+				sw3 = i;
+			}
+		}
+		printf("\nSW\n");
+		int holdsw = atoi(&registers[sw3][1]);
+		printf("holdsw: %i\n", holdsw);
+		sprintf(&registers[sw3][1], "%d", sp);
+		sp = stackp(&registers[sw3][1], 1, sp);
+
+		printf("storing %s(%s) at   %s\n",registers[sw2][0], &registers[sw2][1], &memory[sp][0]);
+		strcpy(&memory[sp][1], &registers[sw2][1]);
+		printf("%s\n",&memory[sp][1]);
+
+	}
 
 }
+	for(int j = 0; j <= 1000; j++){
+		for(int k = 0; k < 5; k++){
+			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
+		}
+	}
+}
 //combonation of J and JR cuases loop. 
-	//passed strings
+//passed strings
 int addi(char *reg1, char *reg2){
 	//conterts to int and adds them
 	int a = atoi(&reg1);
@@ -474,8 +509,15 @@ unsigned int addiu(char *reg1, char *reg2){
 	unsigned long a = atol(&reg1);
 	unsigned long b = atol(&reg2);
 	printf("a: %lu	b: %lu\n",a,b);
+	if(a < b){
+		printf("unsigned out of bounds ( result - );\nReturning 0;\n");
+		return 0;
+	}else{
+
+	printf("a: %lu	b: %lu\n",a,b);
 	unsigned long c = a + b;
 	return c;
+	}
 }
 
 unsigned int subu(char *reg1, char *reg2){
@@ -483,7 +525,7 @@ unsigned int subu(char *reg1, char *reg2){
 	unsigned long a = atol(&reg1);
 	unsigned long b = atol(&reg2);
 	if( a < b){
-		printf("unsigned out of bounds ( result - );");
+		printf("unsigned out of bounds ( result - );\nReturning 0;");
 		return 0;
 	}else{
 	long c = a - b;
@@ -518,4 +560,25 @@ int jal(char *arg1){
 		printf("returning 1\n");
 		return 1;
 	}
+}
+int stackp(char *reg1, int move, int sp){
+	int a = atoi(&reg1);
+	if(sp < 900){
+		printf("Memory out of bounds, please proceed with care, my program is fragile\n");
+		exit(0);
+	}
+	if(sp > 1000){
+		printf("Woooow there, sir you need to take your flock and turn back from winst you came\n");
+		exit(0);
+	}
+ 	if(move = 1){
+ 		sp -1;
+ 		return sp;
+ 	}else if(sp < 1000){
+ 		sp+1;
+ 		return sp;
+ 	}else{
+ 		printf("Dude, how?\n");
+ 		exit(0);
+ 	}
 }
