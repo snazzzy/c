@@ -176,7 +176,7 @@ int main(int arc, char *argv[]){
 	int jmpcntr = 0;
 	int m = 0;
 	int sp = 1000;
-	sprintf(&memory[30][1], "%d", sp);
+	sprintf(&registers[30][1], "%d", sp);
 
 	//this loop goes through the entire memory[][] to compare
 	for(m; m <=901; m++){
@@ -448,14 +448,20 @@ int main(int arc, char *argv[]){
 			}
 		}
 		printf("\nSW\n");
-		int holdsw = atoi(&registers[sw3][1]);
-		printf("holdsw: %i\n", holdsw);
-		sprintf(&registers[sw3][1], "%d", sp);
-		sp = stackp(&registers[sw3][1], 1, sp);
-
-		printf("storing %s(%s) at   %s\n",registers[sw2][0], &registers[sw2][1], &memory[sp][0]);
+		//int holdsw = atoi(&registers[sw3][1]);
+		sp = atoi(&registers[sw3][1]);
+		printf("sp: %i\n", sp);
+		if(sp < 900){
+			printf("Memory out of bounds, please proceed with care, my program is fragile\n");
+			printf("The stack pointer goes past memory bounds, only 900 to 1000\n");
+			exit(0);
+		}
+		if(sp > 1000){
+			printf("Woooow there, sir you need to take your flock and turn back from winst you came\n");
+			printf("The stack pointer goes past memory bounds, only 900 to 1000\n");
+			exit(0);
+		}
 		strcpy(&memory[sp][1], &registers[sw2][1]);
-		printf("%s\n",&memory[sp][1]);
 
 	}
 
