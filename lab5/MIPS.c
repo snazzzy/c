@@ -111,6 +111,7 @@ int main(int arc, char *argv[]){
 	char instruction10[] = {'j', 'a', 'l', '\0'};
 	char instruction11[] = {'j', 'r', '\0'};
 	char instruction12[] = {'s', 'w', '\0'};
+	char instruction13[] = {'l', 'w', '\0'};
 	int addi1 = 0;
 	int addi2 = 0;
 	int addi3 = 0;
@@ -155,6 +156,10 @@ int main(int arc, char *argv[]){
 	int sw2 = 0;
 	int sw3 = 0;
 	int sw4 = 0;
+	int lw1 = 0;
+	int lw2 = 0;
+	int lw3 = 0;
+	int lw4 = 0;
 	//flag1 is used to break jump when bne is equal.
 	int flag1 = 1;
 	int flag2 = 1;
@@ -464,11 +469,35 @@ int main(int arc, char *argv[]){
 		strcpy(&memory[sp][1], &registers[sw2][1]);
 
 	}
+	else if(!strcmp(&memory[m][1], instruction13)){
+		lw1 = m;
+		int asize = strlen(&memory[lw1][2]);
+		int bsize = strlen(&memory[lw1][3]);
+		for(int i = 0; i < 32; i++){	
+			if(!strcmp(&memory[lw1][2], registers[i][0])){
+				lw2 = i;
+			}
+			if(!strncmp(&memory[lw1][3], registers[i][0], asize -1)){
+				lw3 = i;
+			}
+		}
+		printf("\n LW \n");
+		//grabs the stack pointer
+		sp = atoi(&registers[lw3][1]);
+				printf("sp: %i\n", sp);
 
+		if(sp > 1000){
+			printf("Dude, ur trying to read stuff out of memory, chillax and review your MIPS.txt\n");
+			printf("The stack pointer goes past memory bounds, only 900 to 1000\n");
+			exit(0);
+		}
+		strcpy(&registers[lw2][1], &memory[sp][1]);
+		printf("reg: %s is now %s\n", registers[lw2][0], &registers[lw2][1]);
+}
 }
 	for(int j = 0; j <= 1000; j++){
 		for(int k = 0; k < 5; k++){
-			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
+			//printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
 		}
 	}
 }
