@@ -3,9 +3,9 @@
 200, addi, $t5, $zero, $s1
 204, j, 224
 208, addi, $s2, $zero, 2
-20c, addi, $s1, $zero, 2
+20c, addi, $s1, $zero, -1
 210, addi, $s0, $zero, 18
-214, bne, $s1, $s2, 220
+214, bgtz, $s1, 220
 218, addi, $s1, $zero, 1
 21c, j, 214
 220, jr, $ra
@@ -14,8 +14,8 @@
 22c, add, $t0, $s1, $s2
 230, addi, $sp, $zero, -1
 238, sw, $t1, $sp
-23c, addiu, $t0, $s1, -1
-240, subu, $t0, $s1, $s2
+23c,
+240, addiu, $t5, $zero, -10
 244, subu, $t0, $s1, $s2
 248, li, $t0, 200
 24c, lw, $t3, $sp
