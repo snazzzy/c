@@ -112,6 +112,7 @@ int main(int arc, char *argv[]){
 	char instruction11[] = {'j', 'r', '\0'};
 	char instruction12[] = {'s', 'w', '\0'};
 	char instruction13[] = {'l', 'w', '\0'};
+	char instruction14[] = {'b', 'g', 't', 'z', '\0'};
 	int addi1 = 0;
 	int addi2 = 0;
 	int addi3 = 0;
@@ -129,6 +130,10 @@ int main(int arc, char *argv[]){
 	int bne2 = 0;
 	int bne3 = 0;
 	int bne4 = 0;
+	int bgtz1 = 0;
+	int bgtz2 = 0;
+	int bgtz3 = 0;
+	int bgtz4 = 0;
 	int addiu1 = 0;
 	int addiu2 = 0;
 	int addiu3 = 0;
@@ -320,6 +325,32 @@ int main(int arc, char *argv[]){
 			}
 
 		}
+		else if(!strcmp(&memory[m][1], instruction14)){
+			bgtz1 = m;
+			int asize = strlen(&memory[bgtz1][3]);
+			for(int i = 0; i < 32; i++){
+				if(!strcmp(&memory[bgtz1][2], registers[i][0])){
+					bgtz2 = i;
+				}
+				for(int f = 0; f < 900; f++){
+					if(!strncmp(&memory[bgtz1][3], &memory[f][0], asize-1)){
+						bgtz3 = f;
+					}
+				}
+
+			}
+			printf("\nBGTZ\n");
+			printf("reg passed : %s\n",&registers[bgtz2][1]);
+			int holdbgtz = bgtz(registers[bgtz2][1]);
+			printf("holdbgtz = %i\n",holdbgtz);
+			if(holdbgtz	== 0){
+				printf("%s (%s) is not greater that zero\n", registers[bgtz2][0], &registers[bgtz2][1]);
+			}else{
+				printf("%s (%s) is greater that zero\n", registers[bgtz2][0], &registers[bgtz2][1]);
+				printf("going to index %s\n", &memory[bgtz3][0]);
+				m = bgtz3-1;
+			}
+		}
 
 
 			//grabs the location (line) of the first instruction
@@ -337,10 +368,12 @@ int main(int arc, char *argv[]){
 			}
 		}
 			//holds the value from the function call
-		unsigned int holdaddiu = addiu(registers[addiu3][1], &memory[addiu1][4]);
+		unsigned long holdaddiu = addiu(registers[addiu3][1], memory[addiu1][4]);
 		addiuhold = atoi(&registers[addiu2][1]);
 		test4 = holdaddiu + addiuhold;
 		printf("\nADDIu:\n");
+		printf("adiuhold: %lu\n",addiuhold);
+		printf("test4: %lu",test4);
 		printf("%s was %s",registers[addiu2][0], &registers[addiu2][1]);
 		//this updates the reg array value
 		sprintf(&registers[addiu2][1], "%lu", test4);
@@ -495,6 +528,7 @@ int main(int arc, char *argv[]){
 		printf("reg: %s is now %s\n", registers[lw2][0], &registers[lw2][1]);
 }
 }
+
 	for(int j = 0; j <= 1000; j++){
 		for(int k = 0; k < 5; k++){
 			//printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
@@ -540,17 +574,32 @@ int bne(char *reg1, char *reg2){
 		return 0;
 	}
 }
+int bgtz(char *reg1){
+	printf("in bgtz function\n");
+	int a = atoi(&reg1);
+	printf("a = %i\n", a);
+	if(a > 0){
+		printf("returning 1\n");
+		return 1;
+	}else{
+		printf("returning 0\n");
+		return 0;
+	}
+}
 unsigned int addiu(char *reg1, char *reg2){
+		printf("\nreg1 = %s\n reg2 = %s\n", &reg1, &reg2);
 	unsigned long a = atol(&reg1);
 	unsigned long b = atol(&reg2);
 	printf("a: %lu	b: %lu\n",a,b);
-	if(a < b){
+	printf("\na = %lu\n",a);
+	printf("\nb = %lu\n",b);
+	long c = a + b;
+	if(c < 0){
 		printf("unsigned out of bounds ( result - );\nReturning 0;\n");
 		return 0;
 	}else{
 
-	printf("a: %lu	b: %lu\n",a,b);
-	unsigned long c = a + b;
+	printf("\nc = %lu\n",c);
 	return c;
 	}
 }
