@@ -53,23 +53,25 @@ int main(int arc, char *argv[]){
 	registers[29][0] = "$gp";
 	registers[30][0] = "$sp";
 	registers[31][0] = "$fp";
-	//this is the value I load into the registers
 	char place[] = {'0', '\0'};
-	//here I load zero into the 2nd dem.
+	//I am going loading all of the registers with 0 to start
 	for(int i = 0; i < 32; i++){
 		//printf("%i ", i);
 		sscanf(place, "%s", &registers[i][1]);
 	}
-	//Prep for reading file into memory
+	//declartion of memory and stack
 	char *memory[1001][5];
 	char line[MAX_LINE];
+	//opening the file to be read in
 	FILE *fp = fopen("mips.txt", "r");
 	char *temp;
 	char *trash;
 	int counter = 0;
 	int zero = 0;
 	int hexvar = 0;
+	//variable used to load the memory addresses
 	int hexvar2 = 400;
+	//here I load the array of memory addresses.
 	for(int i = 0; i <= 1000; i++){
 		sprintf(&memory[i][0],"%x", hexvar);
 		sprintf(&memory[i][1],"%d", zero);
@@ -81,9 +83,11 @@ int main(int arc, char *argv[]){
 
 	//grabes a line, and uses sscan to input arguments into memory
 	while(fgets(line, 40, fp)){
+		//I grab the memory address and store it in temp
 		if(sscanf(line, "%40[^, ^\t]", &temp)){
 			printf("temp: %s\n", &temp);
 			for(int i = 0; i <= 900; i++){
+				//I find the memory address in memory and the file, and load it in that spot
 				if(!strcmp(&temp, &memory[i][0])){
 					printf("in if %i\n",i);
 					sscanf(line, " %40[^,^\n], %40[^,^\n], %40[^,^\n], %40[^,^\n], %40[^,^\n]", &memory[i][0], &memory[i][1], &memory[i][2], &memory[i][3], &memory[i][4]);
@@ -92,6 +96,7 @@ int main(int arc, char *argv[]){
 		}
 
 	}
+	//just my print statement printing memory
 	for(int j = 0; j <= 1000; j++){
 		for(int k = 0; k < 5; k++){
 			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
@@ -207,6 +212,7 @@ int main(int arc, char *argv[]){
 		}
 			//holds the value from the function call
 			int holdaddi = addi(registers[addi3][1], memory[addi1][4]);
+			//here I add the original vallue and its new one
 			test1 = holdaddi + atoi(&registers[addi2][1]);
 			printf("\nADDI:\n");
 			printf("%s was %s",registers[addi2][0], &registers[addi2][1]);
@@ -247,6 +253,7 @@ int main(int arc, char *argv[]){
 		else if(!strcmp(&memory[m][1], instruction9)){
 			add1 = m;
 			int asize = strlen(&memory[add1][4]);
+			//finds the registers in instruction and saves them
 			for(int i = 0; i < 32; i++){
 				if(!strcmp(&memory[add1][2], registers[i][0])){
 					add2 = i;
@@ -258,10 +265,13 @@ int main(int arc, char *argv[]){
 					add4 = i;
 				}
 			}
+			//passes the registers
 			int holdadd = add(registers[add3][1], registers[add4][1]);
+			//adds the old value with the new value
 			test3 = holdadd + atoi(&registers[add2][1]);
 			printf("\nADD\n");
 			printf("%s was %s",registers[add2][0], &registers[add2][1]);
+			//updates the array value
 			sprintf(&registers[add2][1], "%d", test3);
 			printf("\nregister: %s has %s + %s\n",registers[add2][0], registers[add3][0], registers[add4][0]);
 			printf("%s = %s\n",registers[add2][0],&registers[add2][1]);
@@ -272,7 +282,7 @@ int main(int arc, char *argv[]){
 
 		else if(!strcmp(&memory[m][1], instruction4)){
 			sll1 = m;
-
+			//grabs the 2 registers, the third argument is an immediate value
 			for(int b = 0; b < 32; b++){
 				if(!strcmp(&memory[sll1][2], registers[b][0])){
 					sll2 = b;
@@ -281,9 +291,11 @@ int main(int arc, char *argv[]){
 					sll3 = b;
 				}
 			}
+			//passes the register and the immediate value
 			int holdsll = sll(registers[sll2][1], memory[sll1][4]);
 			printf("\nSLL:\n");
 			printf("%s was %s",registers[sll2][0], &registers[sll2][1]);
+			//update the register valeu
 			sprintf(&registers[sll2][1], "%d", holdsll);
 			printf("\nregister: %s has %s  %s\n",registers[sll2][0], registers[sll3][0], &memory[sll1][4]);
 			printf("%s = %s\n",registers[sll2][0],&registers[sll2][1]);
@@ -301,16 +313,20 @@ int main(int arc, char *argv[]){
 					bne3 = d;
 				}
 			}
+			//go through the memory addresses in memory for a match
 			for(int j = 0; j <= 900; j++){
 				int asize = strlen(&memory[bne1][4]);
+				//grabs the memory address to jump to
 				//grabs the memory address to jump to
 				if(!strncmp(&memory[j][0], &memory[bne1][4], asize-1)){
 					bne4 = j;
 					printf("\nbne4:%i",bne4);
 				}
 			}
+			//passes the registers and stores the bol 
 			int holdbne = bne(registers[bne2][1], registers[bne3][1]);
 			printf("\nBNE\n");
+			//The function returns a Bol, if 1, jump to the memory address
 			if(holdbne == 0){
 				//if true
 				printf("%s(%s) == %s(%s)\n",registers[bne2][0],&registers[bne2][1], registers[bne3][0],&registers[bne3][1]);
@@ -321,6 +337,7 @@ int main(int arc, char *argv[]){
 			}else{
 				printf("%s != %s\n",registers[bne2][0], registers[bne3][0]);
 				flag1 = 0;
+				//here I adjust my program counter(the main for())
 				m = bne4-1;
 			}
 
@@ -329,9 +346,11 @@ int main(int arc, char *argv[]){
 			bgtz1 = m;
 			int asize = strlen(&memory[bgtz1][3]);
 			for(int i = 0; i < 32; i++){
+				//grab the register value in my array
 				if(!strcmp(&memory[bgtz1][2], registers[i][0])){
 					bgtz2 = i;
 				}
+				//go through the mem addresses to find a match
 				for(int f = 0; f < 900; f++){
 					if(!strncmp(&memory[bgtz1][3], &memory[f][0], asize-1)){
 						bgtz3 = f;
@@ -341,13 +360,17 @@ int main(int arc, char *argv[]){
 			}
 			printf("\nBGTZ\n");
 			printf("reg passed : %s\n",&registers[bgtz2][1]);
+			//passes the registers and stores the bol
 			int holdbgtz = bgtz(registers[bgtz2][1]);
 			printf("holdbgtz = %i\n",holdbgtz);
+			//If flase
 			if(holdbgtz	== 0){
 				printf("%s (%s) is not greater that zero\n", registers[bgtz2][0], &registers[bgtz2][1]);
 			}else{
+				//if true
 				printf("%s (%s) is greater that zero\n", registers[bgtz2][0], &registers[bgtz2][1]);
 				printf("going to index %s\n", &memory[bgtz3][0]);
+				//adjust my program counter
 				m = bgtz3-1;
 			}
 		}
@@ -369,13 +392,14 @@ int main(int arc, char *argv[]){
 		}
 			//holds the value from the function call
 		unsigned long holdaddiu = addiu(registers[addiu3][1], memory[addiu1][4]);
+		//I take the old value and add it to the new
 		addiuhold = atoi(&registers[addiu2][1]);
 		test4 = holdaddiu + addiuhold;
 		printf("\nADDIu:\n");
 		printf("adiuhold: %lu\n",addiuhold);
 		printf("test4: %lu",test4);
 		printf("%s was %s",registers[addiu2][0], &registers[addiu2][1]);
-		//this updates the reg array value
+		//this updates the reg array value 
 		sprintf(&registers[addiu2][1], "%lu", test4);
 		printf("\nregister: %s has %s + %s\n",registers[addiu2][0], registers[addiu3][0], &memory[addiu1][4]);
 		printf("%s = %s\n",registers[addiu2][0],&registers[addiu2][1]);
@@ -384,6 +408,7 @@ int main(int arc, char *argv[]){
 	else if(!strcmp(&memory[m][1], instruction7)){
 		subu1 = m;
 		int asize = strlen(&memory[subu1][4]);
+		//matches the registers in the instruction
 		for(int i = 0; i < 32; i++){
 			if(!strcmp(&memory[subu1][2], registers[i][0])){
 				subu2 = i;
@@ -397,7 +422,9 @@ int main(int arc, char *argv[]){
 		}
 		printf("\nSUBU\n");
 		printf("%s was %s",registers[subu2][0], &registers[subu2][1]);
+		//passes the registers and store the int
 		unsigned long holdsubu = subu(registers[subu3][1], registers[subu4][1]);
+		//add the old value to the new value
 		subuhold = atol(&registers[subu2][1]);
 		test5 = holdsubu + subuhold;
 		printf("\ntest5: : %i\n");
@@ -413,11 +440,13 @@ int main(int arc, char *argv[]){
 		flag4++;
 		//captures insturction line at memory
 		j1 = m;
+		//goes through memory and matches address to jump to
 		for(int j = 0; j <= 900; j++){
 			int asize =strlen(&memory[j1][2]);
 			if(!strncmp(&memory[j1][2], &memory[j][0], asize-1)){
 				j3 = j;
 				printf("jumping to %i\n",j1);
+				//then i set my program counter to the address to jump to
 				m = j3-1;
 			}	
 
@@ -426,13 +455,16 @@ int main(int arc, char *argv[]){
 	else if(!strcmp(&memory[m][1], instruction8)){
 		li1 = m;
 		printf("li1 %i\n",li1);
+		//matches the registers in the instruction
 		for(int i = 0; i < 32; i++){
 			if(!strcmp(&memory[li1][2], registers[i][0])){
 				li2 = i;
 			}
 		}
 		printf("\nLI\n");
+		//holds the new value passed
 		int holdli = li(memory[li1][3]);
+		//updates the reg array value
 		sprintf(&registers[li2][1], "%d", holdli);
 		printf("\nregister:%s now has %s\n",registers[li2][0], &registers[li2][1]);
 	}
@@ -447,12 +479,15 @@ int main(int arc, char *argv[]){
 				jal2 = i;
 			}
 		}
+		//saves the return address after jal
 		jal3 = m +1;
+		//copies the return address into the register
 		strcpy(&registers[2][1], &memory[jal3][0]);
 		printf("jal: %i\n",jal2);
 		printf("REG RA:::%s\n", &registers[2][1]);
 		printf("m before: %i\n", m);
 		flag2 = 1;
+		//adjusts my program counter
 		m = jal2-1;
 		printf("m after: %i\n", m);
 
@@ -461,6 +496,7 @@ int main(int arc, char *argv[]){
 	else if(!strcmp(&memory[m][1], instruction11)){
 		//stores the memory address to jump to in $ra register
 		printf("JR\n");
+		//go through mem array to find a match for the address
 		for(int f = 0; f <= 900; f++){
 			if(!strcmp(&memory[f][0], &registers[2][1])){
 				jr2 = f;
@@ -468,6 +504,7 @@ int main(int arc, char *argv[]){
 		}
 			printf("jumping to index %i\n",jr2);
 			flag2 = 0;
+			//jumps to that address
 			m = jr2;
 
 
@@ -476,6 +513,7 @@ int main(int arc, char *argv[]){
 		sw1 = m;
 		int move = 1;
 		int asize = strlen(&memory[sw1][2]);
+		//matches the registers in the instruction
 		for(int i = 0; i < 32; i++){
 			if(!strncmp(&memory[sw1][2], registers[i][0], asize-1)){
 				sw2 = i;
@@ -486,9 +524,10 @@ int main(int arc, char *argv[]){
 			}
 		}
 		printf("\nSW\n");
-		//int holdsw = atoi(&registers[sw3][1]);
+		//stores the stack pointer address
 		sp = atoi(&registers[sw3][1]);
 		printf("sp: %i\n", sp);
+		//These if() check if the stack is in the correct range
 		if(sp < 900){
 			printf("Memory out of bounds, please proceed with care, my program is fragile\n");
 			printf("The stack pointer goes past memory bounds, only 900 to 1000\n");
@@ -499,13 +538,16 @@ int main(int arc, char *argv[]){
 			printf("The stack pointer goes past memory bounds, only 900 to 1000\n");
 			exit(0);
 		}
+		//write to the stack
 		strcpy(&memory[sp][1], &registers[sw2][1]);
+		printf("Stack index modified: %s = %s\n",&memory[sw2][0], &memory[sw2][1]);
 
 	}
 	else if(!strcmp(&memory[m][1], instruction13)){
 		lw1 = m;
 		int asize = strlen(&memory[lw1][2]);
 		int bsize = strlen(&memory[lw1][3]);
+		//match the registers
 		for(int i = 0; i < 32; i++){	
 			if(!strcmp(&memory[lw1][2], registers[i][0])){
 				lw2 = i;
@@ -518,17 +560,19 @@ int main(int arc, char *argv[]){
 		//grabs the stack pointer
 		sp = atoi(&registers[lw3][1]);
 				printf("sp: %i\n", sp);
-
+		//make sure you dont load word out of memory array
 		if(sp > 1000){
 			printf("Dude, ur trying to read stuff out of memory, chillax and review your MIPS.txt\n");
 			printf("The stack pointer goes past memory bounds, only 900 to 1000\n");
 			exit(0);
 		}
+		//writes from stack to the register
 		strcpy(&registers[lw2][1], &memory[sp][1]);
 		printf("reg: %s is now %s\n", registers[lw2][0], &registers[lw2][1]);
+		printf("Stack index read: %s = %s\n",&memory[sp][0], &memory[sp][1]);
 }
 }
-
+	//just for printing the stack
 	for(int j = 0; j <= 1000; j++){
 		for(int k = 0; k < 5; k++){
 			//printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
@@ -574,6 +618,7 @@ int bne(char *reg1, char *reg2){
 		return 0;
 	}
 }
+//used to check if reg is greater that 0
 int bgtz(char *reg1){
 	printf("in bgtz function\n");
 	int a = atoi(&reg1);
@@ -587,55 +632,70 @@ int bgtz(char *reg1){
 	}
 }
 unsigned int addiu(char *reg1, char *reg2){
-		printf("\nreg1 = %s\n reg2 = %s\n", &reg1, &reg2);
+	printf("\nreg1 = %s\n reg2 = %s\n", &reg1, &reg2);
+	//stores values into unsigned
 	unsigned long a = atol(&reg1);
 	unsigned long b = atol(&reg2);
 	printf("a: %lu	b: %lu\n",a,b);
 	printf("\na = %lu\n",a);
 	printf("\nb = %lu\n",b);
+	//adds them up
 	long c = a + b;
+	//make sure result is not negative, or the number is fucking huge, cuases seg fualts
 	if(c < 0){
 		printf("unsigned out of bounds ( result - );\nReturning 0;\n");
 		return 0;
 	}else{
 
 	printf("\nc = %lu\n",c);
+	//return value
 	return c;
 	}
 }
 
 unsigned int subu(char *reg1, char *reg2){
 	printf("\nreg1 = %s\n reg2 = %s\n", &reg1, &reg2);
+	//grabs the values
 	unsigned long a = atol(&reg1);
 	unsigned long b = atol(&reg2);
+	//make sure result is not negative, or the number is fucking huge, cuases seg fualts
 	if( a < b){
 		printf("unsigned out of bounds ( result - );\nReturning 0;");
 		return 0;
 	}else{
+	//adds the values up
 	long c = a - b;
 	printf("\nin subu() c = %lu\n",c);
+	//returns the values
 	return c;	
 	}
 
 
 }
+//pretty dumb function, should have just done this in main
 int li(char *number){
 	int a = atoi(&number);
 	return a;
 
 }
 int add(char *reg1, char *reg2){
+	//grabs the values
 	int a = atoi(&reg1);
 	int b = atoi(&reg2);
+	//adds em up
 	int c = a + b;
+	//returns the value
 	return c;
 }
 int jal(char *arg1){
 	printf("\n JAL()\n");
 	printf("arg1: %s\n",arg1);
 	int a = 0;
+	//grabs the jal address
 	int b = atoi(arg1);
 	printf("arg1: %i\n", b);
+	//this is to prevent a infinte loop. Just in case there is a failure, I makes sure it doesnt
+	//hit the same jal and jr 2 times
 	if(a == b){
 		printf("returning 0\n");
 		return 0;
@@ -645,6 +705,7 @@ int jal(char *arg1){
 		return 1;
 	}
 }
+//this function is not used, keeping it in for my thoughts
 int stackp(char *reg1, int move, int sp){
 	int a = atoi(&reg1);
 	if(sp < 900){
