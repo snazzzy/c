@@ -1,9 +1,9 @@
 100, 512, 0, 0
 1f8, jal, 208
-1fc, 
+1fc, li, $ra, 0
 200, addi, $t5, $zero, $s1
 204, j, 224
-208, addi, $s2, $zero, 2
+208, 
 20c, addi, $s1, $zero, -1
 210, addi, $s0, $zero, 18
 214, bgtz, $s1, 220
@@ -18,5 +18,5 @@
 23c,
 240, addiu, $t5, $zero, -10
 244, subu, $t0, $s1, $s2
-248, li, $sp, 100
+248, li, $sp, 0
 24c, lw, $t3, $sp
