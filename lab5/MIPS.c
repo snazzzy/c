@@ -97,7 +97,7 @@ int main(int arc, char *argv[]){
 	//just my print statement printing memory
 	for(int j = 0; j <= 1000; j++){
 		for(int k = 0; k < 5; k++){
-			//printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
+			printf("memory[%i][%i] : %s\n", j, k, &memory[j][k]);
 		}
 	}
 	fclose(fp);
@@ -190,10 +190,11 @@ int main(int arc, char *argv[]){
 	int m = 0;
 	int sp = 1000;
 	sprintf(&registers[30][1], "%d", sp);
-	printf("To increment Stack Pointer, please use the following:\n");
+	printf("\nTo increment Stack Pointer, please use the following:\n");
 	printf("\naddi, $sp, $zero, -1\n");
-	printf("\nwhen using JAL and JR, you must use jump. Please take note of the folloing mips code:\n");
+	printf("\nWhen using JAL and JR, you must use jump. Please take note of the folloing mips code:\n");
 	printf("\n1f8, jal, 208\n1fc, \n200, addi, $t5, $zero, $s1\n204, j, 224 <----Here, you must jump passed the Jump Return, Or you will get an infinte	loop\n208, addi, $s2, $zero, 2\n20c, addi, $s1, $zero, -1\n210, addi, $s0, $zero, 18\n214, bgtz, $s1, 220\n218, addi, $s1, $zero, 1\n21c, j, 214\n220, jr, $ra\n");
+	printf("\nAlso there are no negative results in the unsigned operations.\nIf your result is negative it will defualt to zero.\n");
 	printf("\nPress enter to continue\n");
 	char enter = 0;
 	while (enter != '\r' && enter != '\n') { enter = getchar(); }
@@ -472,7 +473,7 @@ int main(int arc, char *argv[]){
 		//holds the new value passed
 		int holdli = li(memory[li1][3]);
 		//updates the reg array value
-		sprintf(&registers[li2][1], "%d", holdli);
+		sprintf(&registers[li2][1], "%x", holdli);
 		printf("register:%s now has %s\n",registers[li2][0], &registers[li2][1]);
 	}
 
