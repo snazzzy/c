@@ -473,7 +473,7 @@ int main(int arc, char *argv[]){
 		//holds the new value passed
 		int holdli = li(memory[li1][3]);
 		//updates the reg array value
-		sprintf(&registers[li2][1], "%x", holdli);
+		sprintf(&registers[li2][1], "%d", holdli);
 		printf("register:%s now has %s\n",registers[li2][0], &registers[li2][1]);
 	}
 
@@ -511,6 +511,11 @@ int main(int arc, char *argv[]){
 			printf("jumping to index %i\n",jr2);
 			flag2 = 0;
 			//jumps to that address
+			if(jr2 == 0){
+				printf("return address = 0\nEXITING\n");
+				exit(0);
+			}
+			printf("$ra = %s\n", &registers[2][1]);
 			m = jr2;
 
 
@@ -535,7 +540,8 @@ int main(int arc, char *argv[]){
 		printf("Stack Pointer: %i\n", sp);
 		//These if() check if the stack is in the correct range
 		if(sp < 900){
-			printf("Memory out of bounds, please proceed with care, my program is fragile\n");
+			printf("Woooow there, sir you need to take your flock and turn back from winst you came\n");
+			//printf("Memory out of bounds, please proceed with care, my program is fragile\n");
 			printf("The stack pointer goes past memory bounds, only 900 to 1000\n");
 			exit(0);
 		}
