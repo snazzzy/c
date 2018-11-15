@@ -13,7 +13,7 @@
 224, addi, $t9, $s1, 12
 228, add, $t0, $s1, $s2
 22c, add, $t0, $s1, $s2
-230, addi, $sp, $zero, -1
+230, addi, $sp, $zero, -150
 238, sw, $t0, $sp
 23c,
 240, addiu, $t5, $zero, -10
