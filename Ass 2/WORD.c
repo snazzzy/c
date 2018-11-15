@@ -13,6 +13,7 @@ int main(int argc, char *argv[]){
 	char words[109582][40];
 	char input[40];
 	int i = 0;
+	int locate = 0;
 	while(fgets(line, 40, fp)){
 		sscanf(line, "%s", words[i]);
 		i++;
@@ -51,11 +52,17 @@ int main(int argc, char *argv[]){
 			}
 		}
 	}
+	printf("minham : %i\n", minham);
 	int counter = 0;
 	for(int i = 0; i < 109582 && flag1 == 1; i++){		
 		int hamy = hamming(words[i], input);
+		for(int a = 0; a < strlen(input); a++){
+			if(words[i][a] == input[a] && strlen(words[i]) == inlen){
+				locate = i;
+			}
+		}
 		if(minham == hamy && counter < 5){
-			printf("%s\n", words[i]);
+			printf("%s\n", words[locate]);
 			counter++;
 		}
 	}
@@ -67,13 +74,11 @@ int hamming(char* wordlist, char *input){
 	int count = 0;
 	int wsize = strlen(wordlist);
 	int insize = strlen(input);
-	if(wsize == insize){
 		for(int d = 0; d < insize; d++){
 			ham = wordlist[d] - input[d];
 			if(ham !=0){
 				count++;
 			}
 		}
-	}
 	return count;
 }
