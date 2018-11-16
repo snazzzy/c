@@ -83,8 +83,8 @@ int main(int argc, char *argv[]){
 			}
 		}
 		//Printing the words
-		if(minham == hamy && counter < 5){
-			printf("%s\n", words[locate]);
+		if(minham == hamy && counter < 5 && strlen(words[i]) == inlen){
+			printf("%s\n", words[i]);
 			counter++;
 		}
 	}
