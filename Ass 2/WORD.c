@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
+//githubshit
 #define forty 40
 #define muchowords 109582
 //Prototype for function used below
