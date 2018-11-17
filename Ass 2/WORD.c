@@ -9,12 +9,12 @@
 int hamming(char *wordlist, char *input);
 int main(int argc, char *argv[]){
 	//Make sure starting the program uses the correct format.
-	if (argc > 1){
+	if (argc != 2){
 		printf("error with commands\n");
 		return 0;
 	}
 	//This opens the file
-	FILE *fp = fopen("wordsEN.txt", "r");
+	FILE *fp = fopen(argv[1], "r");
 	//decleration of my arrays 
 	char line[forty];
 	char words[muchowords][forty];
