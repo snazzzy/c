@@ -3,7 +3,7 @@
 
 int main (int argc, char *argv[]) {
     char selector[1];
-    // check for 3 command-line arguments
+    // check for up to 3 command-line arguments
     if (argc > 3) {
         puts("Usage: ./Lab1 word1 word2\n");
         return 1;
@@ -20,7 +20,7 @@ int main (int argc, char *argv[]) {
         }
     }
     printf("selector: %c\n", selector[0]);
-    if(selector[0] != 'r' || 's'){
+    if(selector[0] != 'r' || selector[0] != 's'){
         printf("invalid argument 2, must be r or s\n");
         return 1;
     }
