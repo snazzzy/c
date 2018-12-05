@@ -21,20 +21,16 @@ int main(int argc, char *argv[]){
 	char input[forty];
 	int i = 0;
 	int locate = 0;
-	int minham1 = 0;
-	int flag2 = 0;
-	int counter1 = 0;
 	/*grabs, parses, and stores the words from 
 	wordsEN.txt and loads them in my array*/
 	while(fgets(line, forty, fp)){
 		sscanf(line, "%s", words[i]);
 		i++;
-	}	
+	}
 	int flag =1;
 	int flag1 = 1;
 	//This is for looping until nothing is entered
 	while(flag == 1){
-	int counter = 0;
 	printf("Enter your word here!\n");
 	//gets my input
 	fgets(input, forty, stdin);
@@ -73,7 +69,7 @@ int main(int argc, char *argv[]){
 			}
 		}
 	}
-
+	int counter = 0;
 	//have to go through my wordlist again after I find min
 	for(int i = 0; i < muchowords && flag1 == 1; i++){
 		//another function call		
@@ -87,33 +83,11 @@ int main(int argc, char *argv[]){
 			}
 		}
 		//Printing the words
-			if(minham == hamy && counter < 5 && strlen(words[i]) == inlen){
-				printf("%s\n", words[i]);
-				counter++;
-			}
-	}
-	//EXTRA CREDIT CUASES BUGS FOR LOOPING
-	//COMMENT OUT IF THIS WILL GET ME DOCKED, THANKS
-	if(flag1 == 1){
-	char answer[3];
-	printf("\nDid you find your word?\n(yes or no)\n");
-	fgets(answer, 4, stdin);
-	if(strncmp(answer, "no", 2) != 0){
-		break;
-	}
-	if(!strncmp(answer, "no", 2)){
-		minham = minham +1;
-		printf("Increasing hamming distance by 1\n");
-		for(int i = 0; i < muchowords; i++){
-			int hamy = hamming(words[i], input);
-			if(minham == hamy && strlen(words[i]) == inlen && counter1 < 5){
-				//printf("I: %d\n", i);
-				printf("%s\n", words[i]);
-				counter1++;
-			}
+		if(minham == hamy && counter < 5 && strlen(words[i]) == inlen){
+			printf("%s\n", words[i]);
+			counter++;
 		}
 	}
-}
 }
 }
 //function call for finding hamming distance
