@@ -2,6 +2,7 @@
 #include <string.h>
 
 int main (int argc, char *argv[]) {
+    printf("\nEXTRA CREDIT: s and b work for 0,1,2,3,8. I had spacing problems. I Gave up.\n");
     char selector[1];
     // check for up to 3 command-line arguments
     if (argc > 3) {
@@ -23,7 +24,7 @@ int main (int argc, char *argv[]) {
     }
     int flag = 1;
     int flag1 = 0;
-    printf("selector: %c\n", selector[0]);
+    printf("selector: %c\n\n", selector[0]);
     if(selector[0] == 'r' || selector[0] == 's' || selector[0] == 'b'){
         flag = 0;
         flag1 = 1;
@@ -33,9 +34,10 @@ int main (int argc, char *argv[]) {
       flag = 1;
       flag1 = 0;
     }else{
-      printf("invalid argument 2, must be r, s, r\n");
+      printf("invalid selector, must be r (roman), s (slash), b (backslash)\n\n");
       return 1;
     }
+
     char numbers[100];
     strcpy(numbers, argv[1]);
     printf("input : %s\n", numbers);
@@ -57,8 +59,8 @@ int main (int argc, char *argv[]) {
       for(int i = 0; i < strlen(numbers); i++){
         tops(numbers[i], selector[0]);
       }
-      printf("\n");      
-      
+      printf("\n");
+
       for(int i = 0; i < strlen(numbers); i++){
         topmiddles(numbers[i], selector[0]);
       }
@@ -66,20 +68,21 @@ int main (int argc, char *argv[]) {
 
       for(int i = 0; i < strlen(numbers); i++){
         middles(numbers[i], selector[0]);
-      } 
-      printf("\n");   
-      
+      }
+      printf("\n");
+
       for(int i = 0; i < strlen(numbers); i++){
         botmiddles(numbers[i], selector[0]);
       }
       printf("\n");
-      
+
       for(int i = 0; i < strlen(numbers); i++){
         bottoms(numbers[i], selector[0]);
       }
       printf("\n");
     }
 }
+
 void top(char number){
     switch(number){
         case '-':
@@ -115,7 +118,9 @@ void top(char number){
         case '9':
           printf(" _ ");
           break;
-
+        default:
+        printf("Please enter numbers my dude, not letters.\n\n");
+        exit(0);
     }
 }
 
@@ -228,7 +233,9 @@ void tops(char number, char selector){
           printf("%*c%c%*c", spf, symbols[sp], symbols[sp], spr, symbols[sp]);
           break;
         case '2':
-          printf("%*c%c%c%*c", spf, symbols[sp], symbols[a], symbols[a], spr, symbols[sp]);
+        //s 10
+        //b 10
+          printf("%*c%c%c%*c ", spf, symbols[sp], symbols[a], symbols[a], spr, symbols[sp]);
           break;
         case '3':
           printf("%*c%c%c%*c", spf, symbols[sp], symbols[a], symbols[a], spr, symbols[sp]);
@@ -285,6 +292,8 @@ void topmiddles(char number, char selector){
           printf("%*c%c%*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
           break;
         case '2':
+        //s : 11
+        //b : 11
           printf("%*c  %c%*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
           break;
         case '3':
@@ -334,7 +343,7 @@ void middles(char number, char selector){
   }
     switch(number){
         case '-':
-            printf("-");
+            printf("_");
             break;
         case '0':
           //S 17
@@ -345,6 +354,8 @@ void middles(char number, char selector){
           printf("%*c%c%*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
           break;
         case '2':
+        //s : 11
+        //b : 11
           printf("%*c%c%c%c%*c", spf, symbols[sp], symbols[a], symbols[a], symbols[b], spr, symbols[sp]);
           break;
         case '3':
@@ -403,7 +414,9 @@ void botmiddles(char number, char selector){
           printf("%*c%c%*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
           break;
         case '2':
-          printf("%*c%c%*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
+        //s : 11
+        //b : 11
+          printf("%*c%c  %*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
           break;
         case '3':
           printf("%*c  %c  %*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
@@ -437,6 +450,7 @@ void bottoms(char number, char selector){
   int spf = 0;
   int spr = 0;
   int sp = 4;
+  int val = 0;
   if(selector == 's'){
         //printf("slector = s, fun\n");
     a = 0;
@@ -464,6 +478,8 @@ void bottoms(char number, char selector){
           printf("%*c%c%*c", spf, symbols[sp], symbols[b], spr, symbols[sp]);
           break;
         case '2':
+        //11
+        //11
           printf("%*c%c%c%c%*c", spf, symbols[sp], symbols[b], symbols[a], symbols[a], spr, symbols[sp]);
           break;
         case '3':
