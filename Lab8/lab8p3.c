@@ -9,7 +9,7 @@ int main() {
   array[6] = 1; //f
   array[8] = 2; //d
 
-   array[13] = array[12] * array[8];
+   array[13] = array[12] * array[8] // + array[13];
    array[13] = array[11] * array[7];
    array[13] = array[10] * array[6];
 

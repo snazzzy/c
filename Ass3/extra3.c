@@ -2,7 +2,7 @@
 #include <string.h>
 
 int main (int argc, char *argv[]) {
-    printf("\nEXTRA CREDIT: s and b work for 0,1,2,3,8. I had spacing problems. I Gave up.\n");
+    printf("EXTRA CREDIT: s and b work for 0,1,2,3,8. I had spacing problems. I Gave up.\n");
     char selector[1];
     // check for up to 3 command-line arguments
     if (argc > 3) {
@@ -24,7 +24,7 @@ int main (int argc, char *argv[]) {
     }
     int flag = 1;
     int flag1 = 0;
-    printf("selector: %c\n\n", selector[0]);
+    printf("\nselector: %c\n", selector[0]);
     if(selector[0] == 'r' || selector[0] == 's' || selector[0] == 'b'){
         flag = 0;
         flag1 = 1;
@@ -159,7 +159,9 @@ void middle(char number){
         case '9':
           printf("|_|");
           break;
-
+          default:
+          printf("input numbers, not letters my dude\n");
+          exit(0);
     }
 }
 
